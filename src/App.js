@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { 
+  Box
+} from '@chakra-ui/react';
+import React from 'react';
+import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import Page from './Components/Page';
+import NLoggedIn from './Pages/NLoggedin';
+import LoggedIn from './Pages/LoggedIn';
+import {useCookies} from 'react-cookie';
 
-function App() {
+const App = () => {
+
+  let [cookie, setCookie, removeCookie] = useCookies();
+  const [userLoggedIn, setUserLoggedIn] = React.useState(false);
+  if(cookie.loggedIn === undefined || cookie.loggedIn == 'false') { 
+    setCookie('loggedIn', false);
+  }
+  console.log(!cookie.loggedIn === false)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    !cookie.loggedIn === false ? 
+    <BrowserRouter>
+      <Switch> 
+        <Route path='/' component={LoggedIn} /> 
+      </Switch>
+    </BrowserRouter>
+    : 
+    <BrowserRouter> 
+      <Switch> 
+        <Route path='/' component={NLoggedIn} /> 
+      </Switch>
+    </BrowserRouter>
   );
 }
 
