@@ -1,32 +1,44 @@
 import { 
   Box
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import Page from './Components/Page';
 import NLoggedIn from './Pages/NLoggedin';
 import LoggedIn from './Pages/LoggedIn';
-import {useCookies} from 'react-cookie';
+import {auth} from './firebase';
 
 const App = () => {
 
-  let [cookie, setCookie, removeCookie] = useCookies();
   const [userLoggedIn, setUserLoggedIn] = React.useState(false);
-  if(cookie.loggedIn === undefined || cookie.loggedIn == 'false') { 
-    setCookie('loggedIn', false);
-  }
-  console.log(!cookie.loggedIn === false)
+  auth().onAuthStateChanged((user) => {
+    if(user) { 
+      setUserLoggedIn(true);
+      setUserData(user)
+    }
+  });
+  let [userData, setUserData] = useState();
   return (
-    !cookie.loggedIn === false ? 
+    userLoggedIn ? 
     <BrowserRouter>
       <Switch> 
-        <Route path='/' component={LoggedIn} /> 
+        <Route path='/' component={() => { 
+          return ( 
+            <LoggedIn 
+              userData={userData}
+            />
+          )
+        }} /> 
       </Switch>
     </BrowserRouter>
     : 
     <BrowserRouter> 
       <Switch> 
-        <Route path='/' component={NLoggedIn} /> 
+        <Route path='/' component={() => {
+          return (
+            <NLoggedIn />
+          )
+        }} /> 
       </Switch>
     </BrowserRouter>
   );

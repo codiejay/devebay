@@ -17,7 +17,7 @@ import {firestore, auth} from '../firebase';
 import {useCookies} from 'react-cookie';
 
 
-const NLoggedIn = ({}) => { 
+const NLoggedIn = ({setLoggedIn}) => { 
   //cookies setting 
   let [cookie, setCookies, deleteCookies] = useCookies();
   const regularSignUp = () => { 
@@ -35,9 +35,7 @@ const NLoggedIn = ({}) => {
         email: res.user.email,
         isEarlyAdopter: false
       })
-      .then(() => {
-        setCookies('loggedIn', true)
-      })
+      .then(() => { })
       .catch(() => {alert('please try again')})
     })
 

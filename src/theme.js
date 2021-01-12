@@ -40,6 +40,11 @@ const Button = {
       color: '#fff',
       boxShadow: '2px 4px 10px 1px rgba(0, 42, 179, 0.25)'
     },
+    dashedColored: { 
+      bg: '#4B65BA',
+      border: '2px dashed #fff',
+      color: '#fff'
+    }
   }
 }
 
