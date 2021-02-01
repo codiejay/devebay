@@ -5,10 +5,14 @@ const colors = {
   primary: {
     100: '#002AB3',
     200: '#264ABE',
+    300: '#B3C4F9',
+    400: '#5168B4',
+    500: '#F3F6FE'
   },
   secondary: { 
     100: '#082890',
-    200: '#010B28'
+    200: '#010B28',
+    300: '#102151',
   },
   neutral: { 
     100: '#A2A5AD',
@@ -17,6 +21,10 @@ const colors = {
   fancy: { 
     100: '#ED6292',
     200: '#ED5760'
+  },
+  signals: { 
+    error: '#ED5760',
+    success: '#00E236'
   }
 };
 
@@ -27,8 +35,13 @@ const Heading = {
     h2: {
       fontSize: '25px', 
       fontFamily: `'Inter', sans-serif`,
-      fontWeight: '600'
-    }
+      fontWeight: '600',
+    },
+    h3: {
+      fontSize: '20px', 
+      fontFamily: `'Inter', sans-serif`,
+      fontWeight: '600',
+    },
   }
 };
 
@@ -38,13 +51,26 @@ const Button = {
       padding: '26px',
       bg: 'primary.100',
       color: '#fff',
-      boxShadow: '2px 4px 10px 1px rgba(0, 42, 179, 0.25)'
+      boxShadow: '2px 4px 10px 1px rgba(0, 42, 179, 0.25)',
+      _focus: {
+        boxShadow: 'none'
+      }
     },
     dashedColored: { 
       bg: '#4B65BA',
       border: '2px dashed #fff',
-      color: '#fff'
-    }
+      color: '#fff',
+      _focus: {
+        boxShadow: 'none'
+      }
+    },
+    solid: {
+      bg: '#010B28',
+      color: '#fff',
+      _focus: {
+        boxShadow: 'none'
+      }
+    } 
   }
 }
 

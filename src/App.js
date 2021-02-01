@@ -7,6 +7,7 @@ import Page from './Components/Page';
 import NLoggedIn from './Pages/NLoggedin';
 import LoggedIn from './Pages/LoggedIn';
 import {auth} from './firebase';
+import Upload from './Pages/Upload';
 
 const App = () => {
 
@@ -22,13 +23,19 @@ const App = () => {
     userLoggedIn ? 
     <BrowserRouter>
       <Switch> 
-        <Route path='/' component={() => { 
+        <Route exact path='/' component={() => { 
           return ( 
-            <LoggedIn 
-              userData={userData}
-            />
+            <LoggedIn />
           )
         }} /> 
+        <Route 
+          path='/upload'
+          component={() => {
+            return ( 
+              <Upload />
+            )
+          }}
+        />
       </Switch>
     </BrowserRouter>
     : 

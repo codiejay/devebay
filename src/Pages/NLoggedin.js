@@ -26,29 +26,34 @@ const NLoggedIn = ({setLoggedIn}) => {
     
     provider.addScope('repo');
 
-    auth().signInWithPopup(provider).then((res) => { 
-      firestore.collection('users')
-      .doc(res.user.uid)
-      .set({ 
-        userName: res.additionalUserInfo.username,
-        avatar: res.user.photoURL,
-        email: res.user.email,
-        isEarlyAdopter: false
-      })
-      .then(() => { })
-      .catch(() => {alert('please try again')})
+    auth().signInWithPopup(provider)
+    .then((res) => { 
+      window.location.reload()
     })
-
   }
 
   const earlyAdopterSignUp = () => { 
+    let provider = new auth
+    .GithubAuthProvider();
+    
+    provider.addScope('repo');
 
+    auth().signInWithPopup(provider)
+    .then((res) => { 
+      firestore.collection('earlyAdopter')
+      .doc()
+      .set({ 
+        uid: res.user.email
+      })
+      .then(() => {
+        window.location.reload()
+      })
+    })
   }
 
-  // let [loggedIn, setLoggedIn] = useState(false);
   return ( 
     <Page>
-      <Flex h='80vh' justify='center' align='center'>
+      <Flex transition='ease-in-out' h='80vh' justify='center' align='center'>
         <Box>
           <Heading 
             textTransform='capitalize' 
@@ -74,7 +79,15 @@ const NLoggedIn = ({setLoggedIn}) => {
               hasArrow
               label='Clicking on this button to join Devebay would allow us recongnize you as an early adopter.'
             > 
-              <Button color='#fff' bg='secondary.200' ml='8' leftIcon={<BiCrown size='26'/>} variant='hugeButton'>Become an early adopter</Button>
+              <Button 
+                color='#fff' 
+                bg='secondary.200' 
+                ml='8' 
+                leftIcon={<BiCrown size='26'/>} variant='hugeButton'
+                onClick={earlyAdopterSignUp}
+              >
+                Become an early adopter
+              </Button>
             </Tooltip>
           </Flex>
         </Box>
