@@ -66,10 +66,20 @@ const Button = {
     },
     solid: {
       bg: '#010B28',
+      border: '1px dashed transparent',
       color: '#fff',
+      padding: '24px',
       _focus: {
         boxShadow: 'none'
-      }
+      },
+      _hover: { 
+        border: '1px dashed #fff',
+        bg: '#010B28',
+      },
+      _active: {
+        boxShadow: 'none',
+        bg: '#010B28',
+      },
     } 
   }
 }

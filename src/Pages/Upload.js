@@ -22,7 +22,7 @@ import {
   Select,
   InputLeftElement,
   InputGroup,
-  Button
+  Button,
 } from '@chakra-ui/react';
 import Page from '../Components/Page';
 import thumbsUp from '../Assets/thumbsUp.png';
@@ -31,22 +31,57 @@ import {
 } from 'react-icons/fc'
 import {
   AiOutlineDollar
-} from 'react-icons/ai'
+} from 'react-icons/ai';
+import {BsBoxArrowUp} from 'react-icons/bs';
 
 const Upload = ({}) => {
 
   //hooks
   let [countries, setCountries] = useState([]);
   let [isShippingWorldWide, setIsShippingWorldWide] = useState(true);
+  let [itemImg, setItemImg] = useState('https://images.unsplash.com/photo-1593642532973-d31b6557fa68?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80');
+  const [itemData, setItemData] = useState({ 
+    owner: '',
+    date: 0,
+    id: 0,
+    itemName: '',
+    itemPrice: NaN,
+    metaDesc: '',
+    fullDesc: '',
+    wwShipping: isShippingWorldWide,
+    countries: [...countries],
+    imageUrl: ''
+  })
 
   //remove country from state
   const RemoveCountry = (e) => {
     let itemName = e.target.closest('button').id;
     setCountries(oldArr => oldArr.filter(name => name != itemName))
+  };
+  const imageChange = (e) => {
+    let target = e.target.files[0];
+    let url = URL.createObjectURL(target);
+    setItemImg(url);
+  };
+
+  const ItemDataUpdate = (target) => {
+    switch(target.target.dataset.inputtype) { 
+      case 'itemName': 
+        setItemData({...itemData, itemName: target.target.value});
+        break;
+      case 'itemPrice':
+        setItemData({...itemData, itemPrice: parseInt(target.target.value)});
+        break;
+      case 'itemMetaDesc': 
+        setItemData({...itemData, metaDesc: target.target.value});
+        break;
+      case 'fullDesc': 
+        setItemData({...itemData, fullDesc: target.target.value});
+        break;
+    }
   }
   return ( 
     <Page>
-
       <Grid 
         bg='secondary.200' 
         px='5' 
@@ -78,20 +113,27 @@ const Upload = ({}) => {
         <Box>
           <label>
             <Flex 
+              cursor='pointer'
               borderRadius='9px' 
               border='2px dashed #264ABE' 
-              bg='primary.500' 
               align='center' 
               justify='center' 
               h='100%'
+              bg={`linear-gradient(180deg, rgba(0, 42, 179, 0.38) 0%, rgba(1, 11, 40, 0.51) 100%), url(${itemImg})`}
+              bgPosition='left'
+              bgSize='cover'
+              bgRepeat='no-repeat'
             > 
-              <Icon color='#fff' w='12' h='12' as={FcAddImage}/>
+              <Box>
+                <Icon borderRadius='200px' bg='#fff' p='3' display='block' color='#fff' m='0 auto' w='16' h='16' as={FcAddImage}/>
+              </Box>
             </Flex>
             <Input 
               display='none' 
               type='file' 
               name='file'
               accept='image/*'
+              onChange={(event) => {imageChange(event)}}
             /> 
           </label>
         </Box>
@@ -100,6 +142,8 @@ const Upload = ({}) => {
             <FormControl p='4' borderRadius='9px' border='2px dashed #B3C4F9' isRequired>
               <FormLabel fontWeight='bold' color='secondary.200'>Your item's name</FormLabel>
               <Input 
+                data-inputtype='itemName'
+                onChange={(event) => {ItemDataUpdate(event)}} 
                 type='text' 
                 fontWeight='bold' 
                 color='#010B28'
@@ -116,18 +160,22 @@ const Upload = ({}) => {
               <FormLabel fontWeight='bold' color='secondary.200'>Your item's price. Leave empty for free items</FormLabel>
               <InputGroup>              
                 <Input 
+                data-inputtype='itemPrice'
+                onChange={(event) => {ItemDataUpdate(event)}} 
                   type='number' 
                   fontWeight='bold' 
                   color='#010B28'
                 />
                 <InputLeftElement fontSize='20px' children={<AiOutlineDollar />} />
               </InputGroup>
-              <FormHelperText>Tell us your item's price- be as fair as possible- we would appreciate your transperency.</FormHelperText>
+              <FormHelperText>Tell us your item's price in U.S Dollars - be as fair as possible- we would appreciate your transperency.</FormHelperText>
             </FormControl>
             
             <FormControl p='4' mt='8' borderRadius='9px' border='2px dashed #B3C4F9' isRequired>
               <FormLabel fontWeight='bold' color='secondary.200'>Meta description</FormLabel>
               <Textarea 
+                data-inputtype='itemMetaDesc'
+                onChange={(event) => {ItemDataUpdate(event)}} 
                 fontWeight='bold' 
                 color='#010B28' 
                 type='text' 
@@ -138,6 +186,8 @@ const Upload = ({}) => {
             <FormControl p='4' mt='8' borderRadius='9px' border='2px dashed #B3C4F9' isRequired>
               <FormLabel fontWeight='bold' color='secondary.200'>Full Description</FormLabel>
               <Textarea 
+                data-inputtype='fullDesc'
+                onChange={(event) => {ItemDataUpdate(event)}} 
                 fontWeight='bold' 
                 color='#010B28' 
                 type='text' 
@@ -166,7 +216,6 @@ const Upload = ({}) => {
                 </Tag>
                 <Tag
                   onClick={() => {isShippingWorldWide ? setIsShippingWorldWide(false) : setIsShippingWorldWide(true)}}
-                  opacity='0.3'
                   cursor='pointer'
                   fontWeight='bold' 
                   bg='signals.error' 
@@ -464,6 +513,21 @@ const Upload = ({}) => {
               >
                 Country/Countries you're shipping to.
               </FormLabel>
+              <Box>
+                <Tag
+                  cursor='pointer'
+                  fontWeight='bold' 
+                  bg='signals.error' 
+                  color='#fff'
+                  py='2'
+                  px='4'
+                  fontSize='0.8rem'
+                  textTransform='capitalize'
+                  mb='3'
+                  >
+                    Add at least one country.
+                </Tag>
+              </Box>
               { 
                 countries.map((item, index) => {
                   return ( 
@@ -489,7 +553,7 @@ const Upload = ({}) => {
               <FormHelperText> This is list of countries or a country you're willing to ship to </FormHelperText>
             </FormControl>
 
-            <Button mt='5' type='submit' variant='solid'>Upload your item</Button>
+            <Button alignItems='center' justifyItems='center' leftIcon={<Icon w={6} h={6} as={BsBoxArrowUp} />} mt='5' type='submit' variant='solid' >Upload your item</Button>
           </form>
         </Box>
       </Grid>
