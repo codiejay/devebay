@@ -20,17 +20,18 @@ import {useCookies} from 'react-cookie';
 const NLoggedIn = ({setLoggedIn}) => { 
   //cookies setting 
   let [cookie, setCookies, deleteCookies] = useCookies();
-  const regularSignUp = () => { 
-    let provider = new auth
-    .GithubAuthProvider();
+  // const regularSignUp = () => { 
+  //   let provider = new auth
+  //   .GithubAuthProvider();
     
-    provider.addScope('repo');
+  //   provider.addScope('repo');
 
-    auth().signInWithPopup(provider)
-    .then((res) => { 
-      window.location.reload()
-    })
-  }
+  //   auth().signInWithPopup(provider)
+  //   .then((res) => { 
+  //     console.log()
+  //     window.location.reload()
+  //   })
+  // }
 
   const earlyAdopterSignUp = () => { 
     let provider = new auth
@@ -40,13 +41,17 @@ const NLoggedIn = ({setLoggedIn}) => {
 
     auth().signInWithPopup(provider)
     .then((res) => { 
+      console.log(res.additionalUserInfo)
       firestore.collection('earlyAdopter')
-      .doc()
+      .doc(res.user.email)
       .set({ 
-        uid: res.user.email
+        email: res.user.email,
+        uid: res.user.uid,
+        username: res.additionalUserInfo.username,
+        followers: res.additionalUserInfo.profile.followers
       })
       .then(() => {
-        window.location.reload()
+        // window.location.reload()
       })
     })
   }
@@ -68,13 +73,13 @@ const NLoggedIn = ({setLoggedIn}) => {
           </Heading>
           <Text color='neutral.200' fontSize='xl' textAlign='center'>Safely sell and buy items from developers anywhere around the world. </Text>
           <Flex mt='12' w='fit-content' mx='auto' justify='center' align='center'>
-            <Tooltip 
+            {/* <Tooltip 
               mr='6' 
               hasArrow 
               label='We use github to authenticate just to make sure that every user on Devebay is actually a developer. '
             >
               <Button onClick={regularSignUp} leftIcon={<AiOutlineGithub size='26'/>} variant='hugeButton'>Join with Github</Button>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip 
               hasArrow
               label='Clicking on this button to join Devebay would allow us recongnize you as an early adopter.'
