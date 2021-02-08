@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { 
   Grid,
   Text,
@@ -23,34 +23,63 @@ import {
   InputLeftElement,
   InputGroup,
   Button,
+  Avatar,
+  Link,
 } from '@chakra-ui/react';
 import Page from '../Components/Page';
 import thumbsUp from '../Assets/thumbsUp.png';
 import {
   FcAddImage,
-} from 'react-icons/fc'
+} from 'react-icons/fc';
+import {auth, firestore} from '../firebase';
 import {
   AiOutlineDollar
 } from 'react-icons/ai';
 import {BsBoxArrowUp} from 'react-icons/bs';
+import {FiExternalLink} from 'react-icons/fi';
+import {BiWorld, BiArrowBack, BiArrowToRight} from 'react-icons/bi';
+import {CgArrowRightO} from 'react-icons/cg'
 
-const Upload = ({}) => {
+const Upload = (userData) => {
+
+  //auth data
+
+  useEffect(() => {
+    let date = new Date();
+    let currentUser = auth().currentUser;
+    setUserCredentials({...userCredentials, email: currentUser.email, uid: currentUser.uid,});
+
+    firestore.collection('earlyAdopter').doc(currentUser.email)
+    .get()
+    .then(data => {
+      setUserCredentials({...userCredentials, userName: data.data().username});
+      setItemData({...itemData, owner: data.data().username, id: new Date().getTime(), ownerId: currentUser.uid, date: {...date, month: date.getMonth() + 1, day: date.getDate(), year: date.getFullYear()}, ownerImg: currentUser.photoURL})
+    })
+    
+  }, []);
+
 
   //hooks
+  let [seePreview, setSeePreview] = useState(false);
+  let [uploadedImg, setUploadedImg] = useState(false);
+  let [showImgErr, setShowImgError] = useState(false);
+  let [userCredentials, setUserCredentials] = useState({userName: '', email: '', uid: ''});
   let [countries, setCountries] = useState([]);
   let [isShippingWorldWide, setIsShippingWorldWide] = useState(true);
-  let [itemImg, setItemImg] = useState('https://images.unsplash.com/photo-1593642532973-d31b6557fa68?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80');
+  let [itemImg, setItemImg] = useState('');
   const [itemData, setItemData] = useState({ 
     owner: '',
-    date: 0,
+    ownerId: '',
+    date: {month: 0, day: 0, year: 0},
     id: 0,
     itemName: '',
     itemPrice: NaN,
     metaDesc: '',
     fullDesc: '',
     wwShipping: isShippingWorldWide,
-    countries: [...countries],
-    imageUrl: ''
+    imageUrl: itemImg,
+    isFree: '',
+    ownerImg: '',
   })
 
   //remove country from state
@@ -58,12 +87,17 @@ const Upload = ({}) => {
     let itemName = e.target.closest('button').id;
     setCountries(oldArr => oldArr.filter(name => name != itemName))
   };
+
+  //handleImage change
   const imageChange = (e) => {
+    setShowImgError(false)
+    setUploadedImg(true);
     let target = e.target.files[0];
     let url = URL.createObjectURL(target);
     setItemImg(url);
   };
 
+  //handle data change
   const ItemDataUpdate = (target) => {
     switch(target.target.dataset.inputtype) { 
       case 'itemName': 
@@ -79,10 +113,34 @@ const Upload = ({}) => {
         setItemData({...itemData, fullDesc: target.target.value});
         break;
     }
+  };
+
+  const handleShippingStatus = (status) => {
+    const clearAllCountries = () => {
+      setCountries([]);
+    }
+    status ? clearAllCountries() : console.log('nothing here') ;
+    setIsShippingWorldWide(status);
+    setItemData({...itemData, wwShipping: status});
   }
+
+  //handle form submittion.
+  const formSubmitted = (e) => { 
+    e.preventDefault();
+    
+    !uploadedImg 
+    ? 
+      setShowImgError(true) 
+    : 
+      setShowImgError(false) 
+      setSeePreview(true);
+  }
+
+
   return ( 
     <Page>
       <Grid 
+        display={seePreview ? 'none' : 'grid'}
         bg='secondary.200' 
         px='5' 
         py='20' 
@@ -103,7 +161,7 @@ const Upload = ({}) => {
       </Grid> 
 
       <Grid 
-        border='2px solid #5168B4' 
+        display={seePreview ? 'none' : 'grid'}
         borderRadius='13px' 
         mt={5} 
         p='5'
@@ -112,13 +170,26 @@ const Upload = ({}) => {
       >
         <Box>
           <label>
+            <Tag
+              cursor='pointer'
+              fontWeight='bold' 
+              bg='secondary.200' 
+              color='#fff'
+              py='4'
+              px='3'
+              mb='7'
+              fontSize='1rem'
+              textTransform='capitalize'
+            >
+              Upload an image of your item
+            </Tag>
             <Flex 
               cursor='pointer'
               borderRadius='9px' 
               border='2px dashed #264ABE' 
               align='center' 
               justify='center' 
-              h='100%'
+              h='70%'
               bg={`linear-gradient(180deg, rgba(0, 42, 179, 0.38) 0%, rgba(1, 11, 40, 0.51) 100%), url(${itemImg})`}
               bgPosition='left'
               bgSize='cover'
@@ -133,12 +204,14 @@ const Upload = ({}) => {
               type='file' 
               name='file'
               accept='image/*'
-              onChange={(event) => {imageChange(event)}}
+              onChange={(event) => {
+                imageChange(event) 
+              }}
             /> 
           </label>
         </Box>
         <Box>
-          <form>
+          <form onSubmit={formSubmitted} name='form'>
             <FormControl p='4' borderRadius='9px' border='2px dashed #B3C4F9' isRequired>
               <FormLabel fontWeight='bold' color='secondary.200'>Your item's name</FormLabel>
               <Input 
@@ -176,7 +249,7 @@ const Upload = ({}) => {
               <Textarea 
                 data-inputtype='itemMetaDesc'
                 onChange={(event) => {ItemDataUpdate(event)}} 
-                fontWeight='bold' 
+                // fontWeight='bold' 
                 color='#010B28' 
                 type='text' 
               />
@@ -188,7 +261,6 @@ const Upload = ({}) => {
               <Textarea 
                 data-inputtype='fullDesc'
                 onChange={(event) => {ItemDataUpdate(event)}} 
-                fontWeight='bold' 
                 color='#010B28' 
                 type='text' 
               />
@@ -208,14 +280,15 @@ const Upload = ({}) => {
                   fontSize='1rem'
                   textTransform='capitalize'
                   mr='5'
-                  onClick={() => {isShippingWorldWide ? setIsShippingWorldWide(false) : setIsShippingWorldWide(true)}}
+                  onClick={() => {handleShippingStatus(true)}}
                   cursor='pointer'
                   opacity={isShippingWorldWide ? 1 : '0.3'}
                 >
                   YES
                 </Tag>
                 <Tag
-                  onClick={() => {isShippingWorldWide ? setIsShippingWorldWide(false) : setIsShippingWorldWide(true)}}
+                  onClick={
+                    () => {handleShippingStatus(false)}}
                   cursor='pointer'
                   fontWeight='bold' 
                   bg='signals.error' 
@@ -239,14 +312,13 @@ const Upload = ({}) => {
               mt='8' 
               borderRadius='9px' 
               border='2px dashed #B3C4F9' 
-              isRequired
             >
               <FormLabel fontWeight='bold' color='secondary.200'>Select a country you would be shipping within</FormLabel>
               <Select 
                 fontWeight='bold' 
                 placeholder='Select Country'
                 onChange={(event) => {
-                  setCountries(oldArr => [...oldArr, event.target.value])
+                  setCountries(oldArr => [...oldArr, event.target.value]);
                 }}
               >
               <option value="Afganistan">Afghanistan</    option>
@@ -500,6 +572,7 @@ const Upload = ({}) => {
             </FormControl>
 
             <FormControl 
+              id='dd'
               display={isShippingWorldWide ? 'none' : 'revert'}
               p='4' 
               mt='8' 
@@ -513,21 +586,6 @@ const Upload = ({}) => {
               >
                 Country/Countries you're shipping to.
               </FormLabel>
-              <Box>
-                <Tag
-                  cursor='pointer'
-                  fontWeight='bold' 
-                  bg='signals.error' 
-                  color='#fff'
-                  py='2'
-                  px='4'
-                  fontSize='0.8rem'
-                  textTransform='capitalize'
-                  mb='3'
-                  >
-                    Add at least one country.
-                </Tag>
-              </Box>
               { 
                 countries.map((item, index) => {
                   return ( 
@@ -553,10 +611,115 @@ const Upload = ({}) => {
               <FormHelperText> This is list of countries or a country you're willing to ship to </FormHelperText>
             </FormControl>
 
-            <Button alignItems='center' justifyItems='center' leftIcon={<Icon w={6} h={6} as={BsBoxArrowUp} />} mt='5' type='submit' variant='solid' >Upload your item</Button>
+            <Tag
+              cursor='pointer'
+              fontWeight='bold' 
+              bg='signals.error' 
+              color='#fff'
+              py='4'
+              px='3'
+              mt='7'
+              fontSize='1rem'
+              textTransform='capitalize'
+              display={showImgErr ? 'block' : 'none'}
+            >
+              Please upload an image
+            </Tag>
+            <Button alignItems='center' justifyItems='center' leftIcon={<Icon w={6} h={6} as={BsBoxArrowUp} />} mt='5' type='submit' variant='solid' >Preview and upload</Button>
           </form>
         </Box>
       </Grid>
+      
+      <Box display={seePreview ? 'block' : 'none'}>
+        <Box 
+          py='3' 
+          borderRadius='13px' 
+          bg='secondary.200'
+          my='4'
+          px='2'
+        >
+            <Flex align='center'>
+              <Button 
+                bg='primary.200' 
+                py='1'
+                leftIcon={<BiArrowBack/>}
+                mr='2'
+                onClick={() => {setSeePreview(false)}}
+              >
+                Go back and Edit
+              </Button>
+              <Text color='white'>Preview- this is what your potential buyer would see. you can go back and edit whatever you want.</Text>
+            </Flex>
+          </Box>
+        <Grid py='4' px='3' borderRadius='9px' border='2px dashed #264ABE'  templateColumns='30% 70%' columnGap={6}> 
+          <GridItem>
+            <Image src={itemImg} borderRadius='9px' alt={itemData.itemName} />
+          </GridItem>
+          <GridItem>
+            <Tag bg='secondary.200' fontSize='0.9rem' mb={4} py='2' px='2' color='#fff'>
+              <Avatar size='xs' src={itemData.ownerImg}></Avatar>
+              <Text ml='3'><Flex justify='center' align='center'><Link isExternal mr='2' href={`https://github.com/${itemData.owner}`}>This item is owned and sold by {itemData.owner}</Link> <FiExternalLink/></Flex></Text>
+            </Tag>
+            <Heading>{itemData.itemName}</Heading>
+            <Text w='80%' color='neutral.100'>{itemData.metaDesc}</Text>
+            <Text w='80%' mt={6}>{itemData.fullDesc}</Text>
+
+            <Tag bg='#fff' fontWeight='bolder' border='1px solid #082890' fontSize='1.1rem' mt={4} py='2' px='2'>
+              $ {parseInt(itemData.itemPrice) > 0 ?  itemData.itemPrice : 'FREE'}
+            </Tag>
+
+            { 
+              countries.length <= 0 
+              ? 
+              <Box><Tag fontWeight='bold' bg='secondary.200' color='#fff' my='3' py='2' ><BiWorld /><Text ml='1'>This item ships world wide</Text> </Tag></Box>
+              : 
+              <Box>
+                <Tag fontWeight='bold' bg='secondary.200' color='#fff' my='3' py='2' ><BiWorld /><Text ml='1'>This item ships only to this specific countries/regions</Text> </Tag>
+                <Box>
+                  { 
+                    countries.map((item, index) => {
+                      return (
+                        <Tag 
+                        key={index} 
+                        color='#fff' 
+                        py='3' 
+                        px='5'
+                        fontWeight='bold' 
+                        my='1' 
+                        mr='1'
+                        bg='signals.success' 
+                      >
+                        <TagLabel>{item}</TagLabel>
+                      </Tag>
+                      )
+                    })
+                  }
+                </Box>
+              </Box>
+            }
+
+          </GridItem>
+        </Grid>
+        <Box 
+          py='3' 
+          borderRadius='13px' 
+          bg='secondary.200'
+          my='4'
+          px='2'
+        >
+            <Flex align='center'>
+              <Button 
+                bg='primary.200' 
+                py='1'
+                rightIcon={<CgArrowRightO h='6'/>}
+                mr='2'
+              >
+                Publish
+              </Button>
+              <Text color='white'>Finally! your item would be listed on devebay right away and potenial buyers can see your item</Text>
+            </Flex>
+          </Box>
+      </Box>
       
     </Page>
   )

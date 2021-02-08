@@ -32,7 +32,7 @@ const App = () => {
           path='/upload'
           component={() => {
             return ( 
-              <Upload />
+              <Upload userData={userData}/>
             )
           }}
         />
