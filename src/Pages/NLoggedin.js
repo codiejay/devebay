@@ -41,18 +41,17 @@ const NLoggedIn = ({setLoggedIn}) => {
 
     auth().signInWithPopup(provider)
     .then((res) => { 
-      console.log(res.additionalUserInfo)
-      firestore.collection('earlyAdopter')
-      .doc(res.user.email)
-      .set({ 
-        email: res.user.email,
-        uid: res.user.uid,
-        username: res.additionalUserInfo.username,
-        followers: res.additionalUserInfo.profile.followers
-      })
-      .then(() => {
-        // window.location.reload()
-      })
+      if(res.additionalUserInfo.isNewUser) { 
+        firestore.collection('earlyAdopter')
+        .doc(res.user.email)
+        .set({ 
+          email: res.user.email,
+          uid: res.user.uid,
+          username: res.additionalUserInfo.username,
+          followers: res.additionalUserInfo.profile.followers
+        })
+        .then(() => {window.location.reload()})
+      }
     })
   }
 
