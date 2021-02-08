@@ -70,15 +70,15 @@ const LoggedIn = () => {
   let [userData, setUserData] = React.useState();
   
   auth().onAuthStateChanged(user => {
-    let uid = '';
+    let userEmail = '';
     if(user) { 
       setUserData(user)
-      uid = user.email;
+      userEmail = user.email;
       firestore.collection('earlyAdopter')
       .get()
       .then((res) => {
         res.docs.forEach((item) => {
-          if(uid ===  item.data().uid) { 
+          if(userEmail ===  item.data().email) { 
             setIsEa(true);
           }
         })

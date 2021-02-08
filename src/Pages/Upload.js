@@ -60,7 +60,7 @@ const Upload = (userData) => {
 
 
   //hooks
-  let [seePreview, setSeePreview] = useState(true);
+  let [seePreview, setSeePreview] = useState(false);
   let [uploadedImg, setUploadedImg] = useState(false);
   let [showImgErr, setShowImgError] = useState(false);
   let [userCredentials, setUserCredentials] = useState({userName: '', email: '', uid: ''});
@@ -665,7 +665,7 @@ const Upload = (userData) => {
             <Text w='80%' mt={6}>{itemData.fullDesc}</Text>
 
             <Tag bg='#fff' fontWeight='bolder' border='1px solid #082890' fontSize='1.1rem' mt={4} py='2' px='2'>
-              $ {itemData.itemPrice}
+              $ {parseInt(itemData.itemPrice) > 0 ?  itemData.itemPrice : 'FREE'}
             </Tag>
 
             { 
