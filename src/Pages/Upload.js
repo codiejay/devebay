@@ -9,9 +9,7 @@ import {
   GridItem,
   Box,
   Input,
-  Spacer,
   Icon,
-  Divider,
   FormControl,
   FormLabel,
   FormHelperText,
@@ -31,13 +29,13 @@ import thumbsUp from '../Assets/thumbsUp.png';
 import {
   FcAddImage,
 } from 'react-icons/fc';
-import {auth, firestore} from '../firebase';
+import firebase, {auth, firestore, firebaseStorageRef} from '../firebase';
 import {
   AiOutlineDollar
 } from 'react-icons/ai';
 import {BsBoxArrowUp} from 'react-icons/bs';
 import {FiExternalLink} from 'react-icons/fi';
-import {BiWorld, BiArrowBack, BiArrowToRight} from 'react-icons/bi';
+import {BiWorld, BiArrowBack} from 'react-icons/bi';
 import {CgArrowRightO} from 'react-icons/cg'
 
 const Upload = (userData) => {
@@ -55,11 +53,10 @@ const Upload = (userData) => {
       setUserCredentials({...userCredentials, userName: data.data().username});
       setItemData({...itemData, owner: data.data().username, id: new Date().getTime(), ownerId: currentUser.uid, date: {...date, month: date.getMonth() + 1, day: date.getDate(), year: date.getFullYear()}, ownerImg: currentUser.photoURL})
     })
-    
   }, []);
 
-
   //hooks
+  let [imageFile, setImageFile] = useState(null);
   let [seePreview, setSeePreview] = useState(false);
   let [uploadedImg, setUploadedImg] = useState(false);
   let [showImgErr, setShowImgError] = useState(false);
@@ -73,19 +70,58 @@ const Upload = (userData) => {
     date: {month: 0, day: 0, year: 0},
     id: 0,
     itemName: '',
-    itemPrice: NaN,
+    itemPrice: 0,
     metaDesc: '',
     fullDesc: '',
     wwShipping: isShippingWorldWide,
     imageUrl: itemImg,
     isFree: '',
     ownerImg: '',
+    available: true,
   })
 
+  //functions
+  //PUSH ITEM TO FIREBASE
+  const pushItemToFirebase = () => {
+    let imgRef = firebaseStorageRef.child(`/itemImages/${itemData.owner}-${itemData.itemName}-${itemData.id}`).put(imageFile);
+
+    imgRef.on(
+      'state_changed', 
+      snapshot => {}, 
+      error => {console.log(error)}, 
+      () => { 
+        imgRef.snapshot.ref
+        .getDownloadURL()
+        .then((url) => {
+          setItemData({...itemData, imageUrl: url});
+          let data = { 
+            name: itemData.itemName,
+            price: parseInt(itemData.itemPrice > 0 ? itemData.itemPrice : 0),
+            metaDesc: itemData.metaDesc,
+            fullDesc: itemData.fullDesc,
+            countries: countries.length > 0 ? countries : 'none',
+            wwShipping: itemData.wwShipping,
+            ownerData: {owner: itemData.owner, ownerId: itemData.ownerId, ownerImg: itemData.ownerImg},
+            id: itemData.id,
+            date: itemData.date,
+            available: itemData.available,
+            itemImg: itemData.imageUrl
+          };
+
+          firestore.collection('items')
+          .doc(data.name)
+          .set({...data})
+          .then((d) => { 
+            console.log('data')
+          })
+        })
+      }
+      )
+  }
   //remove country from state
   const RemoveCountry = (e) => {
     let itemName = e.target.closest('button').id;
-    setCountries(oldArr => oldArr.filter(name => name != itemName))
+    setCountries(oldArr => oldArr.filter(name => name !== itemName))
   };
 
   //handleImage change
@@ -93,10 +129,12 @@ const Upload = (userData) => {
     setShowImgError(false)
     setUploadedImg(true);
     let target = e.target.files[0];
-    let url = URL.createObjectURL(target);
-    setItemImg(url);
+    if(target) { 
+      let url = URL.createObjectURL(target);
+      setItemImg(url);
+      setImageFile(target);
+    }
   };
-
   //handle data change
   const ItemDataUpdate = (target) => {
     switch(target.target.dataset.inputtype) { 
@@ -104,7 +142,7 @@ const Upload = (userData) => {
         setItemData({...itemData, itemName: target.target.value});
         break;
       case 'itemPrice':
-        setItemData({...itemData, itemPrice: parseInt(target.target.value)});
+        setItemData({...itemData, itemPrice: target.target.value});
         break;
       case 'itemMetaDesc': 
         setItemData({...itemData, metaDesc: target.target.value});
@@ -112,6 +150,8 @@ const Upload = (userData) => {
       case 'fullDesc': 
         setItemData({...itemData, fullDesc: target.target.value});
         break;
+      default: 
+        return ;
     }
   };
 
@@ -190,13 +230,13 @@ const Upload = (userData) => {
               align='center' 
               justify='center' 
               h='70%'
-              bg={`linear-gradient(180deg, rgba(0, 42, 179, 0.38) 0%, rgba(1, 11, 40, 0.51) 100%), url(${itemImg})`}
+              bg={`url(${itemImg})`}
               bgPosition='left'
               bgSize='cover'
               bgRepeat='no-repeat'
             > 
               <Box>
-                <Icon borderRadius='200px' bg='#fff' p='3' display='block' color='#fff' m='0 auto' w='16' h='16' as={FcAddImage}/>
+                <Icon boxShadow='0px 0px 3px 9px #010b2808' borderRadius='200px' bg='#fff' p='3' display='block' color='#fff' m='0 auto' w='16' h='16' as={FcAddImage}/>
               </Box>
             </Flex>
             <Input 
@@ -247,6 +287,7 @@ const Upload = (userData) => {
             <FormControl p='4' mt='8' borderRadius='9px' border='2px dashed #B3C4F9' isRequired>
               <FormLabel fontWeight='bold' color='secondary.200'>Meta description</FormLabel>
               <Textarea 
+                maxLength='100'
                 data-inputtype='itemMetaDesc'
                 onChange={(event) => {ItemDataUpdate(event)}} 
                 // fontWeight='bold' 
@@ -698,6 +739,8 @@ const Upload = (userData) => {
               </Box>
             }
 
+            <Button bg='primary.100' my='5' py='6' >Place Order</Button>
+
           </GridItem>
         </Grid>
         <Box 
@@ -713,6 +756,7 @@ const Upload = (userData) => {
                 py='1'
                 rightIcon={<CgArrowRightO h='6'/>}
                 mr='2'
+                onClick={pushItemToFirebase}
               >
                 Publish
               </Button>
