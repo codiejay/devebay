@@ -24,6 +24,7 @@ import {
   Avatar,
   Link,
 } from '@chakra-ui/react';
+import {Redirect} from 'react-router-dom';
 import Page from '../Components/Page';
 import thumbsUp from '../Assets/thumbsUp.png';
 import {
@@ -56,6 +57,8 @@ const Upload = (userData) => {
   }, []);
 
   //hooks
+  let [isSubmitting, setIsSubmitting] = useState(false);
+  let [itemUploadFinish, setItemUploadFinish] = useState(false);
   let [imageFile, setImageFile] = useState(null);
   let [seePreview, setSeePreview] = useState(false);
   let [uploadedImg, setUploadedImg] = useState(false);
@@ -85,6 +88,7 @@ const Upload = (userData) => {
   const pushItemToFirebase = () => {
     let imgRef = firebaseStorageRef.child(`/itemImages/${itemData.owner}-${itemData.itemName}-${itemData.id}`).put(imageFile);
 
+    setIsSubmitting(true);
     imgRef.on(
       'state_changed', 
       snapshot => {}, 
@@ -112,7 +116,7 @@ const Upload = (userData) => {
           .doc(data.name)
           .set({...data})
           .then((d) => { 
-            console.log('data')
+            setItemUploadFinish(true);
           })
         })
       }
@@ -178,6 +182,7 @@ const Upload = (userData) => {
 
 
   return ( 
+    !itemUploadFinish ? 
     <Page>
       <Grid 
         display={seePreview ? 'none' : 'grid'}
@@ -752,11 +757,12 @@ const Upload = (userData) => {
         >
             <Flex align='center'>
               <Button 
+                isLoading={isSubmitting}
                 bg='primary.200' 
                 py='1'
                 rightIcon={<CgArrowRightO h='6'/>}
                 mr='2'
-                onClick={pushItemToFirebase}
+                onClick={!isSubmitting ? pushItemToFirebase : () => {}}
               >
                 Publish
               </Button>
@@ -766,6 +772,8 @@ const Upload = (userData) => {
       </Box>
       
     </Page>
+    : 
+    <Redirect to='/' />
   )
 }
 
