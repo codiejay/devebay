@@ -143,7 +143,7 @@ const Upload = (userData) => {
             itemImg: url,
           };
           firestore.collection('items')
-          .doc(data.id)
+          .doc(itemData.id.toString())
           .set({...data})
           .then((d) => { 
             setItemUploadFinish(true);
