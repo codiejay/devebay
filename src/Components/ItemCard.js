@@ -10,7 +10,7 @@ import {
 import {Link} from 'react-router-dom';
 import { Eye, DollarSign } from 'react-feather';
 
-const ItemCard = ({views, imageSrc, itemName, itemDesc, id}) => {
+const ItemCard = ({views, imageSrc, itemName, price, itemDesc, id}) => {
 
   return ( 
       <Box 
@@ -20,6 +20,7 @@ const ItemCard = ({views, imageSrc, itemName, itemDesc, id}) => {
         mr='3'
         h='auto'
         position='relative'
+        w='100%'
       >
         <Flex 
           gap={10}
@@ -35,7 +36,7 @@ const ItemCard = ({views, imageSrc, itemName, itemDesc, id}) => {
           <Icon color='#fff' w='5' h='5' mr='3' as={Eye}/>
           <Text color='#fff' fontWeight='bold'>{views}</Text>
         </Flex>
-        <Link to={`/product/${id}`}>
+        <Link to={`/i/${id}`}>
           <Box 
             mt='5' 
             h='200px' 
@@ -54,7 +55,7 @@ const ItemCard = ({views, imageSrc, itemName, itemDesc, id}) => {
             align='center'
           >
             <Icon color='#fff' w='5' h='5' mr='3' as={DollarSign}/>
-            <Text color='#fff' fontWeight='bold'>{views}</Text>
+            <Text color='#fff' fontWeight='bold'>{price > 0 ? price : 'Free'}</Text>
           </Flex>
           <Heading mt={3} size='h3' textTransform='capitalize' fontWeight='bold'>{itemName}</Heading>
           <Text mt={4}>{itemDesc}</Text>

@@ -17,10 +17,12 @@ const NavBar = ({userData, userAvatar}) => {
   return ( 
     <Box px='4' my='10' bg='primary.100' borderRadius='10px'> 
       <Flex align='center'>
-        <Image 
-          aria-label='Devebay official logo'
-          src={Logo}
-        />
+        <Link to='/'>
+          <Image 
+            aria-label='Devebay official logo'
+            src={Logo}
+          />
+        </Link>
         { 
           userData ? 
           <React.Fragment>

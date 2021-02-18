@@ -141,6 +141,7 @@ const Upload = (userData) => {
             date: itemData.date,
             available: itemData.available,
             itemImg: url,
+            views: 0
           };
           firestore.collection('items')
           .doc(itemData.id.toString())
@@ -207,7 +208,7 @@ const Upload = (userData) => {
     setSeePreview(true);
   };
 
-  let {hasCopied, onCopy} = useClipboard(`${window.location.host}/${itemData.id}`);
+  let {hasCopied, onCopy} = useClipboard(`${window.location.host}/i/${itemData.id}`);
   return ( 
     <Page>
       <Grid

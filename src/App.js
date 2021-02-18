@@ -8,6 +8,7 @@ import NLoggedIn from './Pages/NLoggedin';
 import LoggedIn from './Pages/LoggedIn';
 import {auth} from './firebase';
 import Upload from './Pages/Upload';
+import IndividualItem from './Pages/IndividualItem';
 
 const App = () => {
 
@@ -33,6 +34,14 @@ const App = () => {
           component={() => {
             return ( 
               <Upload userData={userData}/>
+            )
+          }}
+        />
+        <Route 
+          path='/i/:productId'
+          component={() => {
+            return ( 
+              <IndividualItem userData={userData}/>
             )
           }}
         />

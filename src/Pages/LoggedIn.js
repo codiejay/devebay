@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Page from '../Components/Page';
 import { 
   Box,
@@ -24,50 +24,20 @@ import ItemCard from '../Components/ItemCard';
 
 const LoggedIn = () => { 
 
-  let fakeData = [
-    { 
-      view: 19,
-      itemImg: 'https://images.unsplash.com/flagged/photo-1560854350-13c0b47a3180?ixid=MXwxMjA3fDB8MHxzZWFyY2h8NDN8fGxhcHRvcHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-      itemPrice: 1200,
-      itemName: `Macbook 13' 2012`,
-      itemDesc: 'This is a sample sale. please do not order it you would be wasting your',
-      itemOwner: 'James Akpan'
-    },
-    { 
-      view: 200,
-      itemImg: 'https://pbs.twimg.com/media/Dl62GnqXoAAki7z.jpg',
-      itemPrice: 0,
-      itemName: `YDKJS 2019 edition`,
-      itemDesc: 'This is a sample sale. please do not order it you would be wasting your',
-      itemOwner: 'Shane Neubauer'
-    },
-    { 
-      view: 20,
-      itemImg: 'https://i.pinimg.com/originals/ca/c6/41/cac641407a4cbd7df2e12410bb1eff1e.jpg',
-      itemPrice: 40,
-      itemName: `coding  shirt`,
-      itemDesc: 'This is a sample sale. please do not order it you would be wasting your',
-      itemOwner: 'Shane Neubauer'
-    },
-    { 
-      view: 20,
-      itemImg: 'https://i.pinimg.com/originals/ca/c6/41/cac641407a4cbd7df2e12410bb1eff1e.jpg',
-      itemPrice: 40,
-      itemName: `coding  shirt`,
-      itemDesc: 'This is a sample sale. please do not order it you would be wasting your',
-      itemOwner: 'Shane Neubauer'
-    },
-    { 
-      view: 20,
-      itemImg: 'https://i.pinimg.com/originals/ca/c6/41/cac641407a4cbd7df2e12410bb1eff1e.jpg',
-      itemPrice: 40,
-      itemName: `coding  shirt`,
-      itemDesc: 'This is a sample sale. please do not order it you would be wasting your',
-      itemOwner: 'Shane Neubauer'
-    },
-  ];
-
+  //hooks 
+  let [lastFetched, setLastFetched] = React.useState('');
+  let [topThreeItems, setTopThreeItems] = React.useState([]);
+  let [allItems, setAllItems] = React.useState([]);
+  let [allowGetMore, setAllowGetMore] = React.useState(false);
   let [userData, setUserData] = React.useState();
+  let [isEa,setIsEa] = React.useState(false);
+
+
+  //firebase  here 
+  let itemsRef = firestore
+    .collection('items')
+    .orderBy('date', 'desc')
+
   
   auth().onAuthStateChanged(user => {
     let userEmail = '';
@@ -86,7 +56,40 @@ const LoggedIn = () => {
     }
   })
 
-  let [isEa,setIsEa] = React.useState(false);
+  useEffect(() => {
+    let topThreeArr = [];
+    let allArr = [];
+    let lastItem = ''
+
+    itemsRef
+    .limit(3)
+    .get()
+    .then(snapShot => {
+      setLastFetched(snapShot.docs[snapShot.docs.length-1]);
+      snapShot.forEach(item => { 
+        topThreeArr.push(item.data());
+        setAllowGetMore(true);
+      })
+      setTopThreeItems([...topThreeArr]);
+    })
+  }, [])
+
+  useEffect(() => { 
+    let allArr = [];
+    if(allowGetMore) { 
+    itemsRef
+      .startAfter(lastFetched)
+      .limit(3)
+      .get()
+      .then(snapShot => {
+        snapShot.forEach(item => { 
+          allArr.push(item.data())
+        });
+        setAllItems([...allArr]);
+      })
+    }
+  }, [allowGetMore])
+
   return ( 
     <Page>
       <Flex p='8' bg='primary.100' borderRadius='13px'>
@@ -185,20 +188,70 @@ const LoggedIn = () => {
             color='#fff' 
             fontWeight='bold'
           >
-            Most Viewed
+            Latest 3 Items
           </Text>
         </Flex>
         <Grid mt='10' templateColumns='repeat(3, auto)' rowGap={10} columnGap={3}>
           { 
-            fakeData.map((item, index) => {
+            topThreeItems.map((item, index) => {
               return ( 
                 <ItemCard 
                   key={index}
                   views={item.view}
                   imageSrc={item.itemImg}
-                  itemName={item.itemName}
-                  itemDesc={item.itemDesc}
-                  id={index}
+                  itemName={item.name}
+                  itemDesc={item.fullDesc}
+                  id={item.id}
+                  price={item.price.toLocaleString()}
+                  views={item.views}
+                />
+              )
+            })
+          }
+        </Grid>
+      </Box>
+
+      <Box 
+        p='6'
+        borderRadius='14px'  
+        bg='primary.500' 
+        border='2px dashed #5168B4'
+        mt='10'
+        position='relative'
+      > 
+        <Flex 
+          border='5px solid #F3F6FE'
+          position='absolute'
+          top='0'
+          p='2' 
+          align='center' 
+          bg='primary.100' 
+          w='fit-content'
+          borderRadius='13px'
+          transform='translateY(-50%)'
+        >
+          <Tag mr='4' p='2'>🔥</Tag> 
+          <Text 
+            fontSize='lg' 
+            color='#fff' 
+            fontWeight='bold'
+          >
+            All Items
+          </Text>
+        </Flex>
+        <Grid mt='10' templateColumns='repeat(3, 33.3%)' rowGap={10} columnGap={3}>
+          { 
+            allItems.map((item, index) => {
+              return ( 
+                <ItemCard 
+                  key={index}
+                  views={item.view}
+                  imageSrc={item.itemImg}
+                  itemName={item.name}
+                  itemDesc={item.fullDesc}
+                  id={item.id}
+                  price={item.price.toLocaleString()}
+                  views={item.views}
                 />
               )
             })
