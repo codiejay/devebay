@@ -31,6 +31,7 @@ const LoggedIn = () => {
   let [allowGetMore, setAllowGetMore] = React.useState(false);
   let [userData, setUserData] = React.useState();
   let [isEa,setIsEa] = React.useState(false);
+  let [totalItems, setTotalItems] = React.useState();
 
 
   //firebase  here 
@@ -61,6 +62,9 @@ const LoggedIn = () => {
     let allArr = [];
     let lastItem = ''
 
+    itemsRef.get()
+    .then(d => {setTotalItems(d.size)})
+
     itemsRef
     .limit(3)
     .get()
@@ -82,6 +86,7 @@ const LoggedIn = () => {
       .limit(3)
       .get()
       .then(snapShot => {
+        setLastFetched(snapShot.docs[snapShot.docs.length-1]);
         snapShot.forEach(item => { 
           allArr.push(item.data())
         });
@@ -89,6 +94,28 @@ const LoggedIn = () => {
       })
     }
   }, [allowGetMore])
+
+  const getMoreData = () => {
+    let allArr = []; 
+    console.log(allItems.length)
+    if(allItems.length + topThreeItems.length < totalItems) {
+      console.log('yeah') 
+      itemsRef
+      .startAfter(lastFetched)
+      .limit(3)
+      .get()
+      .then(snapShot => {
+        setLastFetched(snapShot.docs[snapShot.docs.length-1]);
+        snapShot.forEach(item => { 
+          allArr.push(item.data())
+        });
+        setAllItems([...allItems, ...allArr]);
+      })
+    }
+    else { 
+      console.log('end here')
+    }
+  }
 
   return ( 
     <Page>
@@ -213,6 +240,7 @@ const LoggedIn = () => {
 
       <Box 
         p='6'
+        pb='20'
         borderRadius='14px'  
         bg='primary.500' 
         border='2px dashed #5168B4'
@@ -239,7 +267,7 @@ const LoggedIn = () => {
             All Items
           </Text>
         </Flex>
-        <Grid mt='10' templateColumns='repeat(3, 33.3%)' rowGap={10} columnGap={3}>
+        <Grid mt='10' templateColumns='repeat(3, auto)' rowGap={10} columnGap={3}>
           { 
             allItems.map((item, index) => {
               return ( 
@@ -257,6 +285,29 @@ const LoggedIn = () => {
             })
           }
         </Grid>
+        <Flex 
+        cursor='pointer'
+          border='5px solid #F3F6FE'
+          position='absolute'
+          top='100%'
+          p='2' 
+          px='4'
+          align='center' 
+          bg='primary.100' 
+          w='fit-content'
+          borderRadius='13px'
+          transform='translateY(-50%)'
+          left='45%'
+          onClick={getMoreData}
+        > 
+          <Text 
+            fontSize='lg' 
+            color='#fff' 
+            fontWeight='bold'
+          >
+            Load More
+          </Text>
+        </Flex>
       </Box>
     </Page>
   )

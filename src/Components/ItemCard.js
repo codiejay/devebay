@@ -58,7 +58,7 @@ const ItemCard = ({views, imageSrc, itemName, price, itemDesc, id}) => {
             <Text color='#fff' fontWeight='bold'>{price > 0 ? price : 'Free'}</Text>
           </Flex>
           <Heading mt={3} size='h3' textTransform='capitalize' fontWeight='bold'>{itemName}</Heading>
-          <Text mt={4}>{itemDesc}</Text>
+            <Text mt={4} >{itemDesc}</Text>
         </Link>
       </Box>
   )

@@ -14,12 +14,13 @@ import {
   Avatar,
   GridItem,
   Link,
-  TagLabel
+  TagLabel,
+  NumberIncrementStepper
 
 } from '@chakra-ui/react';
 import {useParams} from 'react-router-dom';
 import loadingImg from '../Assets/loadingItem.png';
-import {firestore} from '../firebase';
+import  firebase, {firestore} from '../firebase';
 import {BiWorld} from 'react-icons/bi';
 import {FiExternalLink} from 'react-icons/fi'
 
@@ -150,18 +151,39 @@ const IndividualItem = (userData) => {
 
   //firebase
   useEffect(() => { 
+    let mounted = true;
+    console.log(userData)
+    firestore.collection('items')
+    .doc(productId)
+    .get()
+    .then(res => {
+      if(res.data().ownerData.ownerId !== userData.userData.uid) { 
+        firestore.collection('items')
+        .doc(productId)
+        .update({ 
+          views: firebase.firestore.FieldValue.increment(1)
+        })
+      }
+      console.log(userData.userData.uid)
+    })
+
     let itemObj = [];
     firestore.collection('items')
     .where('id', '==',  parseInt(productId))
     .get()
     .then(d => { 
-      d.docs.forEach(item => { 
-        console.log(item.data())
-        itemObj.push(item.data());
-      });
-      setItemData(itemObj[0]);
+      if(mounted) { 
+        d.docs.forEach(item => { 
+          if(mounted) { 
+            itemObj.push(item.data());
+          }
+        });
+        setItemData(itemObj[0]);
+      }
     })
-  }, [])
+
+    return () => mounted = false;
+  }, [userData])
 
   return ( 
     <Page>
