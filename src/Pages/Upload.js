@@ -141,7 +141,8 @@ const Upload = (userData) => {
             date: itemData.date,
             available: itemData.available,
             itemImg: url,
-            views: 0
+            views: 0,
+            order: []
           };
           firestore.collection('items')
           .doc(itemData.id.toString())

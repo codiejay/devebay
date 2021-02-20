@@ -218,7 +218,7 @@ const LoggedIn = () => {
             Latest 3 Items
           </Text>
         </Flex>
-        <Grid mt='10' templateColumns='repeat(3, auto)' rowGap={10} columnGap={3}>
+        <Grid mt='10' templateColumns='1fr 1fr 1fr' rowGap={10} columnGap={3}>
           { 
             topThreeItems.map((item, index) => {
               return ( 
@@ -267,7 +267,7 @@ const LoggedIn = () => {
             All Items
           </Text>
         </Flex>
-        <Grid mt='10' templateColumns='repeat(3, auto)' rowGap={10} columnGap={3}>
+        <Grid mt='10' templateColumns='1fr 1fr 1fr' rowGap={10} columnGap={3}>
           { 
             allItems.map((item, index) => {
               return ( 
@@ -286,7 +286,7 @@ const LoggedIn = () => {
           }
         </Grid>
         <Flex 
-        cursor='pointer'
+          cursor='pointer'
           border='5px solid #F3F6FE'
           position='absolute'
           top='100%'
@@ -305,7 +305,9 @@ const LoggedIn = () => {
             color='#fff' 
             fontWeight='bold'
           >
-            Load More
+            {
+              allItems.length + topThreeItems.length < totalItems ? 'Load More' : 'End of list'
+            }
           </Text>
         </Flex>
       </Box>

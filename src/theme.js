@@ -80,6 +80,25 @@ const Button = {
         boxShadow: 'none',
         bg: '#010B28',
       },
+    } ,
+    error: {
+      bg: 'transparent',
+      border: '1px dashed #ED5760',
+      color: '#ED5760',
+      padding: '24px',
+      _focus: {
+        boxShadow: 'none'
+      },
+      _hover: { 
+        border: '1px dashed #fff',
+        bg: '#ED5760',
+        color: '#fff'
+      },
+      _active: {
+        boxShadow: 'none',
+        bg: '#ED5760',
+        color: '#fff'
+      },
     } 
   }
 }

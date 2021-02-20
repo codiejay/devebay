@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Page from '../Components/Page';
 import { 
   Box,
@@ -15,20 +15,32 @@ import {
   GridItem,
   Link,
   TagLabel,
-  NumberIncrementStepper
+  NumberIncrementStepper,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure
 
 } from '@chakra-ui/react';
 import {useParams} from 'react-router-dom';
 import loadingImg from '../Assets/loadingItem.png';
-import  firebase, {firestore} from '../firebase';
+import  firebase, {auth, firestore} from '../firebase';
 import {BiWorld} from 'react-icons/bi';
-import {FiExternalLink} from 'react-icons/fi'
+import {FiExternalLink} from 'react-icons/fi';
 
 const IndividualItem = (userData) => {
   //hook state and variables
   let productId = useParams().productId;
+  let date = new Date(parseInt(useParams().productId)).toLocaleDateString();
   let [itemData, setItemData] = React.useState();
-  
+  let [isOwner, setIsOwner] = React.useState();
+  let [orderData, setOrderData] = React.useState({});
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  console.log(useParams().productId)
   //tiny components
   const InitialState = () => {
     return ( 
@@ -149,22 +161,36 @@ const IndividualItem = (userData) => {
     )
   };
 
+  let uid;
+  
+  auth().onAuthStateChanged((user) => {
+    if(user) { 
+      uid = user.uid;
+      // setOrderData({displayName: user.displayName, uid: us})
+    }
+  });
+
   //firebase
   useEffect(() => { 
     let mounted = true;
-    console.log(userData)
+
+    //increase views for items if it isn't viewed by it's owner
     firestore.collection('items')
     .doc(productId)
     .get()
     .then(res => {
-      if(res.data().ownerData.ownerId !== userData.userData.uid) { 
+      if(res.data().ownerData.ownerId !== uid) { 
+
+        setIsOwner(false)
         firestore.collection('items')
         .doc(productId)
         .update({ 
           views: firebase.firestore.FieldValue.increment(1)
         })
       }
-      console.log(userData.userData.uid)
+      else { 
+        setIsOwner(true)
+      }
     })
 
     let itemObj = [];
@@ -183,7 +209,7 @@ const IndividualItem = (userData) => {
     })
 
     return () => mounted = false;
-  }, [userData])
+  }, [])
 
   return ( 
     <Page>
@@ -204,6 +230,7 @@ const IndividualItem = (userData) => {
               <Image src={itemData.itemImg} borderRadius='9px' alt={itemData.name} />
             </GridItem>
             <GridItem>
+              <Text mb='1' color='neutral.200'>Date added: {date}</Text>
               <Tag
                 bg='secondary.200'
                 fontSize='0.9rem'
@@ -294,9 +321,30 @@ const IndividualItem = (userData) => {
                 </Box>
               )}
 
-              <Button bg='primary.100' my='5' py='6'>
+              <Button onClick={onOpen} bg='primary.100' my='5' py='6'>
                 Place Order
               </Button>
+              <Modal 
+                size='xl' 
+                isOpen={isOpen} 
+                onClose={onClose}
+                motionPreset="slideInBottom"
+              >
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>
+                      Do you want to plan an order for this item?
+                    </ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      <Text>If you place this order and it's accepted by the Developer who is selling this item they'll receive your email and contact to complete the sale.</Text>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button variant='error' mr='3' onClick={onClose}>No, Cancel</Button>
+                      <Button>Yes, Proceed to order</Button>
+                    </ModalFooter>
+                  </ModalContent>
+              </Modal>
             </GridItem>
           </Grid>
       </Box>
