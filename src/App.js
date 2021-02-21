@@ -9,6 +9,7 @@ import LoggedIn from './Pages/LoggedIn';
 import {auth} from './firebase';
 import Upload from './Pages/Upload';
 import IndividualItem from './Pages/IndividualItem';
+import UserPage from './Pages/UserPage';
 
 const App = () => {
 
@@ -42,6 +43,14 @@ const App = () => {
           component={() => {
             return ( 
               <IndividualItem userData={userData}/>
+            )
+          }}
+        />
+        <Route 
+          path='/u/:username'
+          component={() => {
+            return ( 
+              <UserPage/>
             )
           }}
         />

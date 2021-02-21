@@ -18,7 +18,7 @@ const Page = ({children}) => {
   return ( 
     <Box maxWidth='1200px' mx='auto'>
       <NavBar 
-        userData={user}
+        userData={user ? user : ''}
       />
       <Box > 
         {children}

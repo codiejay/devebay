@@ -2,18 +2,33 @@ import React from 'react';
 import {
   Box,
   Image,
-  Grid,
   Flex,
   Spacer,
   Button,
   Avatar,
-  Icon
 } from '@chakra-ui/react';
 import Logo from '../Assets/devebayLogo.svg';
 import {ChevronDownIcon} from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
+import {firestore} from '../firebase';
 
 const NavBar = ({userData, userAvatar}) => {
+
+  let [githubUserName, setGithubUserName] = React.useState('')
+
+  React.useEffect(() => {
+    let mounted = true
+    firestore.collection('earlyAdopter')
+    .doc(userData.email)
+    .get()
+    .then((d) => {
+      if(mounted) { 
+        setGithubUserName(d.data())
+      }
+    })
+    return () => {mounted=false}
+  }, [userData])
+
   return ( 
     <Box px='4' my='10' bg='primary.100' borderRadius='10px'> 
       <Flex align='center'>
@@ -28,17 +43,18 @@ const NavBar = ({userData, userAvatar}) => {
           <React.Fragment>
             <Spacer />
             <Flex mr={8} align='center' cursor='pointer'>
-              <Avatar
-                cursor='pointer' 
-                display= {userData ? 'block': 'none'}
-                src={userData ? userData.photoURL : ''}
-                name={userData ? userData.displayName.split(' ')[0] : ''}
-                bg='secondary.200'
-                border='3px solid #4B65BA'
-                color='#fff'
-                fontWeight='bold'
-              />
-              <Icon w={8} h={6} color='#fff' as={ChevronDownIcon}/>
+              <Link to={`u/${githubUserName ? githubUserName.username : ''}`}>
+                <Avatar
+                  cursor='pointer' 
+                  display= {userData ? 'block': 'none'}
+                  src={userData ? userData.photoURL : ''}
+                  name={userData ? userData.displayName.split(' ')[0] : ''}
+                  bg='secondary.200'
+                  border='3px solid #4B65BA'
+                  color='#fff'
+                  fontWeight='bold'
+                />
+              </Link>
             </Flex>
             <Flex>
               <Link to='/upload'>
