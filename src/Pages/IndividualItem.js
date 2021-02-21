@@ -45,6 +45,7 @@ const IndividualItem = (userData) => {
   console.log(useParams().productId);
   let uid;
   let userName;
+  let email;
 
   //functions
   const checkpreviousOrders = () => {
@@ -54,7 +55,7 @@ const IndividualItem = (userData) => {
     firestore.collection('items')
     .doc(productId)
     .update({ 
-      order: firebase.firestore.FieldValue.arrayUnion({uid: uid, name: userName})
+      order: firebase.firestore.FieldValue.arrayUnion({uid: uid, name: userName, buyerEmail: email})
     }).then(() => {
       firestore.collection('users')
       .where('uid', '==', uid)
@@ -219,7 +220,7 @@ const IndividualItem = (userData) => {
     if(user) { 
       uid = user.uid;
       userName = user.displayName;
-      
+      email = user.email;
     }
   });
 

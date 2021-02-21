@@ -25,6 +25,7 @@ const UserPage = () => {
 
 
   //hooks state and variables
+  let [receivedOrders, setReceiverOrders] = useState([]);
   let [userItems, setUserItems] = useState();
   let [orderedList, setOrderList] = useState([]);
   let [userData, setUserData] = useState();
@@ -63,8 +64,9 @@ const UserPage = () => {
           <GridItem>
             <Heading fontSize='1.4rem'>{data.data.name}</Heading>
             <Text fontSize='0.8rem' color='neutral.200'>{data.data.metaDesc}</Text>
-            <Text color='secondary.200'>{data.data.fullDesc}</Text>
+            <Text mt={5} color='secondary.200'>{data.data.fullDesc}</Text>
             <Button 
+              mt={3} 
               onClick={onCopy}
               leftIcon={<CopyIcon />}
               p='2' 
@@ -80,20 +82,30 @@ const UserPage = () => {
     )
   }
 
+  const ReceivedItems = (data) => {
+    
+  }
+
   //hooks effects
   useEffect(() => { 
     let mounted = true;
     auth().onAuthStateChanged((user) => {
       if(user) { 
         let itemsArr = [];
+        let receivedordersArr = [];
         setUserData({username: username, userimg: user.photoURL})
         firestore.collection('items')
         .where('ownerData.owner', '==', username)
         .get()
         .then((res) => {
           res.forEach((item) => { 
-            itemsArr.push(item.data())
+            itemsArr.push(item.data());
+            if(item.data().order.length > 0) { 
+              receivedordersArr.push({orderedBy: item.data().order[0].name, buyerId: item.data().order[0].uid, itemName: item.data().name, itemImg: item.data().itemImg, itemId: item.data().id})
+
+            }
           });
+          setReceiverOrders(receivedordersArr);
           setUserItems(itemsArr);
         })
       }

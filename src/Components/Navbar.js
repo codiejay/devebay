@@ -58,7 +58,7 @@ const NavBar = ({userData, userAvatar}) => {
               </Link>
             </Flex>
             <Flex>
-              <Link to='/upload'>
+              <Link onClick={() => {history.push('/upload')}}>
                 <Button variant='dashedColored' mr='8px'>+</Button> 
                 <Button variant='dashedColored'>UPLOAD</Button>
               </Link>
