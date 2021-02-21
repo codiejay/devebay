@@ -38,9 +38,62 @@ const IndividualItem = (userData) => {
   let date = new Date(parseInt(useParams().productId)).toLocaleDateString();
   let [itemData, setItemData] = React.useState();
   let [isOwner, setIsOwner] = React.useState();
-  let [orderData, setOrderData] = React.useState({});
+  let [orderComplete, setOrderComplete] = React.useState(false);
+  let [userOrders, setUserOrders] = React.useState([]);
+  let [previouslyOrdered, setPreviouslyOrdered] = React.useState();
   const {isOpen, onOpen, onClose} = useDisclosure();
-  console.log(useParams().productId)
+  console.log(useParams().productId);
+  let uid;
+  let userName;
+
+  //functions
+  const checkpreviousOrders = () => {
+    
+  }
+  const processOrder = () => {  
+    firestore.collection('items')
+    .doc(productId)
+    .update({ 
+      order: firebase.firestore.FieldValue.arrayUnion({uid: uid, name: userName})
+    }).then(() => {
+      firestore.collection('earlyAdopter')
+      .where('uid', '==', uid)
+      .get()
+      .then((res) => {
+        res.forEach(item => {
+          item.ref.update({
+            orderPlaced: firebase.firestore.FieldValue.arrayUnion({itemId: productId})
+          })
+          .then(() => {setOrderComplete(true)})
+        })
+      })
+    })
+  }
+
+
+  useEffect(() => {
+    auth().onAuthStateChanged((user) => {
+      if(user) { 
+        let orderList = [];
+        firestore.collection('earlyAdopter')
+        .where('uid' , '==', uid)
+        .get()
+        .then(doc => {
+          doc.forEach((item) => {
+            item.data().orderPlaced.forEach(item => {
+              orderList.push(item.itemId)
+            })
+          })
+          setUserOrders(orderList)
+        })
+
+        userOrders.indexOf(productId) !== -1 ? setPreviouslyOrdered(true) : setPreviouslyOrdered(false)
+
+      }
+    })
+  }, [uid])
+
+
   //tiny components
   const InitialState = () => {
     return ( 
@@ -161,12 +214,11 @@ const IndividualItem = (userData) => {
     )
   };
 
-  let uid;
-  
   auth().onAuthStateChanged((user) => {
     if(user) { 
       uid = user.uid;
-      // setOrderData({displayName: user.displayName, uid: us})
+      userName = user.displayName;
+      
     }
   });
 
@@ -174,6 +226,10 @@ const IndividualItem = (userData) => {
   useEffect(() => { 
     let mounted = true;
 
+    //add the list of orderitems by the current user
+
+
+    
     //increase views for items if it isn't viewed by it's owner
     firestore.collection('items')
     .doc(productId)
@@ -320,10 +376,18 @@ const IndividualItem = (userData) => {
                   </Box>
                 </Box>
               )}
-
-              <Button onClick={onOpen} bg='primary.100' my='5' py='6'>
-                Place Order
+              { 
+                orderComplete ? 
+                <Button bg='primary.100' my='5' py='6'>Your Order has been received</Button> 
+                : 
+                isOwner ? <Button bg='primary.100' my='5' py='6'>You can't order your own item 😉</Button> : 
+                <Button onClick={userOrders.indexOf(productId) !== -1 ? () => {} : onOpen} bg='primary.100' my='5' py='6'>
+                { 
+                  userOrders.indexOf(productId) !== -1 ? 
+                  `You've already placed an order for this item` : `Place Order `
+                }
               </Button>
+              }
               <Modal 
                 size='xl' 
                 isOpen={isOpen} 
@@ -333,15 +397,20 @@ const IndividualItem = (userData) => {
                   <ModalOverlay />
                   <ModalContent>
                     <ModalHeader>
-                      Do you want to plan an order for this item?
+                      {orderComplete ? '🔥 Your order has been sent' : 'Do you want to plan an order for this item?'}
                     </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                      <Text>If you place this order and it's accepted by the Developer who is selling this item they'll receive your email and contact to complete the sale.</Text>
+                      { 
+                        orderComplete ? 
+                        <Text> {itemData.ownerData.owner ? itemData.ownerData.owner : ''} would reach our to you if they accept your order</Text>
+                        : 
+                        <Text>If you place this order and it's accepted by the Developer who is selling this item they'll receive your email and contact to complete the sale.</Text>
+                      }
                     </ModalBody>
                     <ModalFooter>
-                      <Button variant='error' mr='3' onClick={onClose}>No, Cancel</Button>
-                      <Button>Yes, Proceed to order</Button>
+                      <Button variant='error' mr='3' onClick={onClose}>{orderComplete ? 'Close' : 'No, Cancel'}</Button>
+                      <Button  onClick={processOrder} display={orderComplete ? 'none' : 'inline-flex'} >Yes, Proceed to order</Button>
                     </ModalFooter>
                   </ModalContent>
               </Modal>
