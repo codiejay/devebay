@@ -16,7 +16,7 @@ import {
   TabPanel,
   Button,
   Image,
-  Link,
+  Link as Chlink,
   useClipboard
 } from '@chakra-ui/react';
 import {CopyIcon} from '@chakra-ui/icons'
@@ -83,7 +83,43 @@ const UserPage = () => {
   }
 
   const ReceivedItems = (data) => {
-    
+
+    return ( 
+      <Box 
+        m='3' 
+        border='1px dashed #010B28'
+        px='3'
+        py='4'
+        borderRadius='20px'
+      >
+        <Grid templateColumns='auto 8fr'>
+          <GridItem mr='3'>
+            <Box 
+              bg={`url(${data.data.itemImg})`}  
+              bgPosition='center'
+              bgSize='cover'
+              w='100px'
+              h='100px'
+              boxShadow='0px 11px 8px 6px #a2a5ad36'
+              borderRadius='12px'
+            ></Box>
+          </GridItem>
+          <GridItem>
+          <Heading fontSize='1.4rem'>{data.data.itemName}</Heading>
+            <Text fontSize='1rem' mt={1}>{`Your item was ordered by ${data.data.orderedBy}. You are provided with their email to contact them and continue the transaction`}</Text>
+            <Button 
+              mt={3} 
+              p='1' 
+              bg='primary.100'  
+              fontSize='0.9rem'
+              _hover={{border: '1px solid transparent'}}
+            >
+              <Chlink href={`mailto:${data.data.buyerEmail}`} target='_blank'>{`Send ${data.data.orderedBy} an email`}</Chlink>
+            </Button>
+          </GridItem>
+        </Grid>
+      </Box>
+    )
   }
 
   //hooks effects
@@ -101,7 +137,7 @@ const UserPage = () => {
           res.forEach((item) => { 
             itemsArr.push(item.data());
             if(item.data().order.length > 0) { 
-              receivedordersArr.push({orderedBy: item.data().order[0].name, buyerId: item.data().order[0].uid, itemName: item.data().name, itemImg: item.data().itemImg, itemId: item.data().id})
+              receivedordersArr.push({orderedBy: item.data().order[0].name, buyerId: item.data().order[0].uid, itemName: item.data().name, itemImg: item.data().itemImg, buyerEmail: item.data().order[0].buyerEmail , itemId: item.data().id})
 
             }
           });
@@ -141,7 +177,7 @@ const UserPage = () => {
                 alt={userData.username} 
               />
               <Text mt='3'>
-                <Link href={`github.com/${userData.username}`}>{`@${userData.username}`}</Link>
+                <Chlink href={`github.com/${userData.username}`}>{`@${userData.username}`}</Chlink>
               </Text>
             </GridItem>
             <GridItem>
@@ -169,6 +205,16 @@ const UserPage = () => {
 
                   <TabPanel>
                     <Heading fontSize='1.3rem'>Received Orders 📦</Heading>
+                    { 
+                      receivedOrders ? receivedOrders.map((item, index) => {
+                        return ( 
+                          <ReceivedItems 
+                            key={index}
+                            data={item}
+                          />
+                        )
+                      }) : ''
+                    }
                   </TabPanel>
 
                   <TabPanel >
