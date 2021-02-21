@@ -56,7 +56,7 @@ const IndividualItem = (userData) => {
     .update({ 
       order: firebase.firestore.FieldValue.arrayUnion({uid: uid, name: userName})
     }).then(() => {
-      firestore.collection('earlyAdopter')
+      firestore.collection('users')
       .where('uid', '==', uid)
       .get()
       .then((res) => {
@@ -75,11 +75,12 @@ const IndividualItem = (userData) => {
     auth().onAuthStateChanged((user) => {
       if(user) { 
         let orderList = [];
-        firestore.collection('earlyAdopter')
+        firestore.collection('users')
         .where('uid' , '==', uid)
         .get()
         .then(doc => {
           doc.forEach((item) => {
+            console.log(item.data())
             item.data().orderPlaced.forEach(item => {
               orderList.push(item.itemId)
             })

@@ -18,7 +18,7 @@ const NavBar = ({userData, userAvatar}) => {
 
   React.useEffect(() => {
     let mounted = true
-    firestore.collection('earlyAdopter')
+    firestore.collection('users')
     .doc(userData.email)
     .get()
     .then((d) => {

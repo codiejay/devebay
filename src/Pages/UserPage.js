@@ -95,20 +95,12 @@ const UserPage = () => {
             itemsArr.push(item.data())
           });
           setUserItems(itemsArr);
-          userItems ? userItems.forEach((item) => {
-            if(item.order.length > 0) { 
-              console.log('getting there')
-            }
-            else{ 
-              console.log(item.order);
-            }
-          }) : [].map(e => {})
         })
       }
     })
 
     if(username) { 
-      firestore.collection('earlyAdopter')
+      firestore.collection('users')
       .where('username', '==', username)
       .get()
       .then((res) => {

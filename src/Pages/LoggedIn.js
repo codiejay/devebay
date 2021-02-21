@@ -45,7 +45,7 @@ const LoggedIn = () => {
     if(user) { 
       setUserData(user)
       userEmail = user.email;
-      firestore.collection('earlyAdopter')
+      firestore.collection('users')
       .get()
       .then((res) => {
         res.docs.forEach((item) => {

@@ -52,7 +52,7 @@ const Upload = (userData) => {
     });
 
     firestore
-      .collection('earlyAdopter')
+      .collection('users')
       .doc(currentUser.email)
       .get()
       .then((data) => {

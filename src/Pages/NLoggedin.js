@@ -42,13 +42,15 @@ const NLoggedIn = ({setLoggedIn}) => {
     auth().signInWithPopup(provider)
     .then((res) => { 
       if(res.additionalUserInfo.isNewUser) { 
-        firestore.collection('earlyAdopter')
+        firestore.collection('users')
         .doc(res.user.email)
         .set({ 
           email: res.user.email,
           uid: res.user.uid,
           username: res.additionalUserInfo.username,
-          followers: res.additionalUserInfo.profile.followers
+          followers: res.additionalUserInfo.profile.followers,
+          earlyAdopter: true,
+          orderPlaced: []
         })
         .then(() => {window.location.reload()})
       }
