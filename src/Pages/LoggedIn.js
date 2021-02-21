@@ -237,7 +237,6 @@ const LoggedIn = () => {
           }
         </Grid>
       </Box>
-
       <Box 
         p='6'
         pb='20'
@@ -268,8 +267,8 @@ const LoggedIn = () => {
           </Text>
         </Flex>
         <Grid mt='10' templateColumns='1fr 1fr 1fr' rowGap={10} columnGap={3}>
-          { 
-            allItems.map((item, index) => {
+          {  
+            allItems.length > 0 ? allItems.map((item, index) => {
               return ( 
                 <ItemCard 
                   key={index}
@@ -282,7 +281,7 @@ const LoggedIn = () => {
                   views={item.views}
                 />
               )
-            })
+            })  : 'No items yet'
           }
         </Grid>
         <Flex 
