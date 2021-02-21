@@ -63,7 +63,7 @@ const UserPage = () => {
           <GridItem>
             <Heading fontSize='1.4rem'>{data.data.name}</Heading>
             <Text fontSize='0.8rem' color='neutral.200'>{data.data.metaDesc}</Text>
-            <Text color='secondary.200'>Full desc</Text>
+            <Text color='secondary.200'>{data.data.fullDesc}</Text>
             <Button 
               onClick={onCopy}
               leftIcon={<CopyIcon />}

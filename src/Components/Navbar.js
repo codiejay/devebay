@@ -9,11 +9,11 @@ import {
 } from '@chakra-ui/react';
 import Logo from '../Assets/devebayLogo.svg';
 import {ChevronDownIcon} from '@chakra-ui/icons';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import {firestore} from '../firebase';
 
 const NavBar = ({userData, userAvatar}) => {
-
+  let history = useHistory();
   let [githubUserName, setGithubUserName] = React.useState('')
 
   React.useEffect(() => {
@@ -43,8 +43,9 @@ const NavBar = ({userData, userAvatar}) => {
           <React.Fragment>
             <Spacer />
             <Flex mr={8} align='center' cursor='pointer'>
-              <Link to={`u/${githubUserName ? githubUserName.username : ''}`}>
+              <Link>
                 <Avatar
+                  onClick={() =>  {history.push(`/u/${githubUserName.username}`)}}
                   cursor='pointer' 
                   display= {userData ? 'block': 'none'}
                   src={userData ? userData.photoURL : ''}
