@@ -31,7 +31,11 @@ const colors = {
 
 const Heading = {
   sizes: { 
-    h1: {fontSize: ['85px'], lineHeight: '1'},
+    h1: {
+      fontSize: ['55px', '35px', '85px'], 
+      lineHeight: ['1.2', '3em', '1.2em'],
+      textAlign: 'center'
+    },
     h2: {
       fontSize: '25px', 
       fontFamily: `'Inter', sans-serif`,

@@ -30,12 +30,20 @@ const NavBar = ({userData, userAvatar}) => {
   }, [userData])
 
   return ( 
-    <Box px='4' my='10' bg='primary.100' borderRadius='10px'> 
+    <Box 
+      px='4' 
+      my='10' 
+      bg='primary.100' 
+      borderRadius='10px' 
+      mx='auto'
+      py={{base: '3', lg: '2', md: '3'}}
+    > 
       <Flex align='center'>
         <Link to='/'>
           <Image 
             aria-label='Devebay official logo'
             src={Logo}
+            h={{base: '45px', lg: '60px', md: '80px'}}
           />
         </Link>
         { 
