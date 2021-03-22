@@ -47,7 +47,7 @@ const NLoggedIn = ({setLoggedIn}) => {
 
   return ( 
     <Page>
-      <Flex transition='ease-in-out' h={{base: '100vh', lg: '85vh', md: '80vh'}} justify='center' align='center'>
+      <Flex transition='ease-in-out' h={{base: '80vh', lg: '85vh', md: '80vh'}} justify='center' align='center'>
         <Box>
           <Heading 
             textTransform='capitalize' 
@@ -66,7 +66,7 @@ const NLoggedIn = ({setLoggedIn}) => {
           > 
             Safely sell and buy items from developers anywhere around the world. 
           </Text>
-          <Flex mt='12' w='fit-content' mx='auto' justify='center' align='center'>
+          <Flex mt='12' w='fit-content' mx={{base: '0', lg: 'auto', md: 'autp'}} justify='center' align='center'>
             {/* <Tooltip 
               mr='6' 
               hasArrow 
