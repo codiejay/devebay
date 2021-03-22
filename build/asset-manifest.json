@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.js": "/static/js/main.c5bb542f.chunk.js",
-    "main.js.map": "/static/js/main.c5bb542f.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.b4f9c342.js",
-    "runtime-main.js.map": "/static/js/runtime-main.b4f9c342.js.map",
-    "static/js/2.1a342da9.chunk.js": "/static/js/2.1a342da9.chunk.js",
-    "static/js/2.1a342da9.chunk.js.map": "/static/js/2.1a342da9.chunk.js.map",
-    "static/js/3.2124d9af.chunk.js": "/static/js/3.2124d9af.chunk.js",
-    "static/js/3.2124d9af.chunk.js.map": "/static/js/3.2124d9af.chunk.js.map",
+    "main.js": "/static/js/main.c5576be1.chunk.js",
+    "main.js.map": "/static/js/main.c5576be1.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.92cbe962.js",
+    "runtime-main.js.map": "/static/js/runtime-main.92cbe962.js.map",
+    "static/js/2.66b80bb2.chunk.js": "/static/js/2.66b80bb2.chunk.js",
+    "static/js/2.66b80bb2.chunk.js.map": "/static/js/2.66b80bb2.chunk.js.map",
+    "static/js/3.8cb0e62c.chunk.js": "/static/js/3.8cb0e62c.chunk.js",
+    "static/js/3.8cb0e62c.chunk.js.map": "/static/js/3.8cb0e62c.chunk.js.map",
     "index.html": "/index.html",
-    "static/js/2.1a342da9.chunk.js.LICENSE.txt": "/static/js/2.1a342da9.chunk.js.LICENSE.txt",
+    "static/js/2.66b80bb2.chunk.js.LICENSE.txt": "/static/js/2.66b80bb2.chunk.js.LICENSE.txt",
     "static/media/devebayLogo.0eedaa23.svg": "/static/media/devebayLogo.0eedaa23.svg",
     "static/media/helpp.610a66c0.svg": "/static/media/helpp.610a66c0.svg",
     "static/media/nigeria.72f8c36e.svg": "/static/media/nigeria.72f8c36e.svg",
@@ -17,8 +17,8 @@
     "static/media/thumbsUp.7416825f.png": "/static/media/thumbsUp.7416825f.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.b4f9c342.js",
-    "static/js/2.1a342da9.chunk.js",
-    "static/js/main.c5bb542f.chunk.js"
+    "static/js/runtime-main.92cbe962.js",
+    "static/js/2.66b80bb2.chunk.js",
+    "static/js/main.c5576be1.chunk.js"
   ]
 }
