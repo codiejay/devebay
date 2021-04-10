@@ -214,34 +214,6 @@ const Upload = (userData) => {
     <Page>
       <Grid
         display={seePreview ? 'none' : 'grid'}
-        bg='secondary.200'
-        px='5'
-        py='20'
-        borderRadius='13px'
-        templateColumns='repeat(2, 1fr)'
-      >
-        <GridItem>
-          <Container m='0'>
-            <Heading fontSize='4rem' mb={4} color='#fff'>
-              Upload Your Item
-            </Heading>
-            <Text color='#fff' lineHeight='1.7rem'>
-              Uploading on Devebay means that you are sure and willing to see
-              your item to an intrested buyer. Please take care to fill the
-              information below- it would help give your potential buyer a good
-              idea of what your product looks like and your terms- Cheers!
-            </Text>
-          </Container>
-        </GridItem>
-        <GridItem>
-          <Flex justifyContent='center' alignContent='center'>
-            <Image transform='scale(1.4)' w='50%' src={thumbsUp} />
-          </Flex>
-        </GridItem>
-      </Grid>
-
-      <Grid
-        display={seePreview ? 'none' : 'grid'}
         borderRadius='13px'
         mt={5}
         p='5'

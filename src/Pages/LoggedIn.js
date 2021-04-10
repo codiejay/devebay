@@ -80,7 +80,7 @@ const LoggedIn = () => {
 
   useEffect(() => { 
     let allArr = [];
-    if(allowGetMore) { 
+    if(allowGetMore && lastFetched) { 
     itemsRef
       .startAfter(lastFetched)
       .limit(3)
@@ -120,7 +120,7 @@ const LoggedIn = () => {
   return ( 
     <Page>
       <Flex p='8' bg='primary.100' borderRadius='13px'>
-        <Box w='80%'>
+        <Box w={{base: '100%', md: '100%', lg:'80%'}}>
           <Flex w='fit-content'>
             <Tag 
               fontWeight='bold' 
@@ -147,7 +147,7 @@ const LoggedIn = () => {
               👑
             </Tag>
           </Flex>
-          <Heading mb='10' fontSize='60px' color='#fff'>
+          <Heading mb='10' fontSize={{base: '29px', md: '60px', lg: '60px'}} color='#fff'>
             What would you buy <br/> from  a Developer today?
           </Heading>
           <Button 
@@ -159,7 +159,7 @@ const LoggedIn = () => {
             Scroll to find out
           </Button>
         </Box>
-        <Box>
+        <Box display={{base: 'none', md: 'none', lg:'block'}}>
           <Image w='170px' mt='-110%' src={rockHand} />
         </Box>
       </Flex>
@@ -167,10 +167,11 @@ const LoggedIn = () => {
       <Flex 
         borderRadius='14px' 
         p='4' 
-        align='center' 
+        align={{base: 'left', md: 'center', lg: 'center'}} 
         bg='secondary.200'
         mt='8'
         display={isEa ? 'flex' : 'none'}
+        direction={{base: 'column', md: 'row', lg: 'row'}}
       >
         <Tag
           fontWeight='bold' 
@@ -180,14 +181,20 @@ const LoggedIn = () => {
           fontSize='1.7rem'
           textTransform='capitalize'
           mr='5'
+          mb='3'
+          w={{base: 'fit-content', md: 'auto', lg: 'auto'}} 
         >
           ✨
         </Tag>
-        <Text fontWeight='bold' color='#fff'>
+        <Text mb='3' fontWeight='bold'  color='#fff' >
           Welcome Early Adopter- Please upload an item to help us grow.
         </Text>
         <Spacer />
-        <Button variant='dashedColored' bg='secondary.300'>UPLOAD</Button>
+        <Button  
+          w={{base: '35%', md: 'auto', lg: 'auto'}} variant='dashedColored' bg='secondary.300'
+        >
+          UPLOAD
+        </Button>
       </Flex>
 
       <Box 
@@ -218,7 +225,7 @@ const LoggedIn = () => {
             Latest 3 Items
           </Text>
         </Flex>
-        <Grid mt='10' templateColumns='1fr 1fr 1fr' rowGap={10} columnGap={3}>
+        <Grid mt='10' templateColumns={{base: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr'}} rowGap={10} columnGap={3}>
           { 
             topThreeItems.map((item, index) => {
               return ( 
@@ -266,7 +273,7 @@ const LoggedIn = () => {
             All Items
           </Text>
         </Flex>
-        <Grid mt='10' templateColumns='1fr 1fr 1fr' rowGap={10} columnGap={3}>
+        <Grid mt='10' templateColumns={{base: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr'}} rowGap={10} columnGap={3}>
           {  
             allItems.length > 0 ? allItems.map((item, index) => {
               return ( 
@@ -296,7 +303,7 @@ const LoggedIn = () => {
           w='fit-content'
           borderRadius='13px'
           transform='translateY(-50%)'
-          left='45%'
+          left={{base: '30%', md: '40%', lg: '45%'}}
           onClick={getMoreData}
         > 
           <Text 

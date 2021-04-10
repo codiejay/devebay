@@ -174,7 +174,7 @@ const NLoggedIn = ({setLoggedIn}) => {
               color='#fff'
               textAlign='left'
             >
-              Help,
+              Get Started,
             </Heading>
             <Text 
               lineHeight='taller' 
@@ -189,7 +189,7 @@ const NLoggedIn = ({setLoggedIn}) => {
               label='Clicking on this button to join Devebay would allow us recongnize you as an early adopter.'
               placement='right'
             > 
-              <Button color='#fff' bg='secondary.200' mt='8' leftIcon={<BiCrown size='26'/>} variant='hugeButton'>Lend us a hand</Button>
+              <Button color='#fff' bg='secondary.200' mt='8' leftIcon={<BiCrown size='26'/>} variant='hugeButton'>Start now</Button>
             </Tooltip>
           </Box>
           <Box w='90%' display={{base: 'none', lg: 'block', md: 'none'}}>

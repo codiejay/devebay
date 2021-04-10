@@ -16,7 +16,7 @@ const Page = ({children}) => {
 
   let [user, setUser] = useState();
   return ( 
-    <Box maxWidth={{base: '95%', md: '90%', lg: '1200px'}} mx='auto'>
+    <Box maxWidth={{base: '95%', md: '95%', lg: '1200px'}} mx='auto'>
       <NavBar 
         userData={user ? user : ''}
       />
